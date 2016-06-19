@@ -31,9 +31,11 @@ class ViewController: UIViewController {
   
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     if let touchLocation = event?.allTouches()?.first?.location(in: view) {
-      playerAnimator = UIViewPropertyAnimator(duration: 0.3, curve: .easeIn, animations: { [weak self] in
+      playerAnimator = UIViewPropertyAnimator(duration: 0.5, dampingRatio: 0.5,
+        animations: { [weak self] in
           self?.playerView.center = touchLocation
-        })
+        }
+      )
       playerAnimator?.startAnimation()
     }
   }
