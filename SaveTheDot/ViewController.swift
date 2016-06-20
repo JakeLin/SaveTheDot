@@ -121,8 +121,14 @@ class ViewController: UIViewController {
     let elapsedTime = sender.timestamp - beginTimestamp
     clock.text = format(timeInterval: elapsedTime)
     
-    
-    //
+    // Check collision
+    enemyViews.forEach {
+      if let playerFrame = playerView.layer.presentation()?.frame,
+        enemyFrame = $0.layer.presentation()?.frame
+        where playerFrame.intersects(enemyFrame) {
+        gameOver()
+      }
+    }
   }
 }
 
@@ -177,5 +183,9 @@ private extension ViewController {
     let minutes = (interval / 60) % 60
     let milliseconds = Int(timeInterval * 1000) % 1000
     return String(format: "%02d:%02d.%03d", minutes, seconds, milliseconds)
+  }
+  
+  func gameOver() {
+    print(#function)
   }
 }
