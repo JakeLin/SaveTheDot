@@ -29,12 +29,18 @@ class ViewController: UIViewController {
   private var enemyViews = [UIView]()
   private var enemyAnimators = [UIViewPropertyAnimator]()
   private var enemyTimer: Timer?
+  
+  private var displayLink: CADisplayLink?
+  private var beginTimestamp: TimeInterval = 0
 
+  @IBOutlet weak var clock: UILabel!
+  
   // MARK: - Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
     setupPlayerView()
     startEnemyTimer()
+    startDisplayLink()
   }
 
   override func didReceiveMemoryWarning() {
@@ -106,6 +112,18 @@ class ViewController: UIViewController {
     enemyAnimators.append(enemyAnimator)
     enemyViews.append(enemyView)
   }
+  
+  func tick(sender: CADisplayLink) {
+    // Update the count up timer
+    if beginTimestamp == 0 {
+      beginTimestamp = sender.timestamp
+    }
+    let elapsedTime = sender.timestamp - beginTimestamp
+    clock.text = format(timeInterval: elapsedTime)
+    
+    
+    //
+  }
 }
 
 private extension ViewController {
@@ -131,6 +149,17 @@ private extension ViewController {
     }
   }
   
+  func startDisplayLink() {
+    displayLink = CADisplayLink(target: self, selector: #selector(tick(sender:)))
+    displayLink?.add(to: RunLoop.main(), forMode: RunLoopMode.defaultRunLoopMode.rawValue)
+  }
+  
+  func stopDisplayLink() {
+    displayLink?.isPaused = true
+    displayLink?.remove(from: RunLoop.main(), forMode: RunLoopMode.defaultRunLoopMode.rawValue)
+    displayLink = nil
+  }
+  
   func getRandomColor() -> UIColor {
     let index = arc4random_uniform(UInt32(colors.count))
     return colors[Int(index)]
@@ -140,5 +169,13 @@ private extension ViewController {
     let dx = playerView.center.x - enemyView.center.x
     let dy = playerView.center.y - enemyView.center.y
     return TimeInterval(sqrt(dx * dx + dy * dy) / enemySpeed)
+  }
+  
+  func format(timeInterval: TimeInterval) -> String {
+    let interval = Int(timeInterval)
+    let seconds = interval % 60
+    let minutes = (interval / 60) % 60
+    let milliseconds = Int(timeInterval * 1000) % 1000
+    return String(format: "%02d:%02d.%03d", minutes, seconds, milliseconds)
   }
 }
