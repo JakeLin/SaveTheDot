@@ -18,7 +18,8 @@ class ViewController: UIViewController {
   
   // MARK: - Configurations
   private let radius: CGFloat = 10
-  private let enemySpeed: CGFloat = 100 // 100 points per second
+  private let playerAnimationDuration = 5.0
+  private let enemySpeed: CGFloat = 60 // points per second
   private let colors = [#colorLiteral(red: 0.08235294118, green: 0.6980392157, blue: 0.5411764706, alpha: 1), #colorLiteral(red: 0.07058823529, green: 0.5725490196, blue: 0.4470588235, alpha: 1), #colorLiteral(red: 0.9333333333, green: 0.7333333333, blue: 0, alpha: 1), #colorLiteral(red: 0.9411764706, green: 0.5450980392, blue: 0, alpha: 1), #colorLiteral(red: 0.1411764706, green: 0.7803921569, blue: 0.3529411765, alpha: 1), #colorLiteral(red: 0.1176470588, green: 0.6431372549, blue: 0.2941176471, alpha: 1), #colorLiteral(red: 0.8784313725, green: 0.4156862745, blue: 0.03921568627, alpha: 1), #colorLiteral(red: 0.7882352941, green: 0.2470588235, blue: 0, alpha: 1), #colorLiteral(red: 0.1490196078, green: 0.5098039216, blue: 0.8352941176, alpha: 1), #colorLiteral(red: 0.1137254902, green: 0.4156862745, blue: 0.6784313725, alpha: 1), #colorLiteral(red: 0.8823529412, green: 0.2, blue: 0.1607843137, alpha: 1), #colorLiteral(red: 0.7019607843, green: 0.1411764706, blue: 0.1098039216, alpha: 1), #colorLiteral(red: 0.537254902, green: 0.2352941176, blue: 0.662745098, alpha: 1), #colorLiteral(red: 0.4823529412, green: 0.1490196078, blue: 0.6235294118, alpha: 1), #colorLiteral(red: 0.6862745098, green: 0.7137254902, blue: 0.7333333333, alpha: 1), #colorLiteral(red: 0.1529411765, green: 0.2196078431, blue: 0.2980392157, alpha: 1), #colorLiteral(red: 0.1294117647, green: 0.1843137255, blue: 0.2470588235, alpha: 1), #colorLiteral(red: 0.5137254902, green: 0.5843137255, blue: 0.5843137255, alpha: 1), #colorLiteral(red: 0.4235294118, green: 0.4745098039, blue: 0.4784313725, alpha: 1)]
   
   // MARK: - Private
@@ -32,8 +33,6 @@ class ViewController: UIViewController {
   // MARK: - Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
-    // Do any additional setup after loading the view, typically from a nib.
-    view.backgroundColor = #colorLiteral(red: 0.9058823529, green: 0.9254901961, blue: 0.9333333333, alpha: 1)
     setupPlayerView()
     startEnemyTimer()
   }
@@ -45,12 +44,24 @@ class ViewController: UIViewController {
   
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     if let touchLocation = event?.allTouches()?.first?.location(in: view) {
-      playerAnimator = UIViewPropertyAnimator(duration: 0.5, dampingRatio: 0.5,
+      // Move the player to the new position
+      playerAnimator = UIViewPropertyAnimator(duration: playerAnimationDuration, dampingRatio: 0.5,
         animations: { [weak self] in
           self?.playerView.center = touchLocation
         }
       )
       playerAnimator?.startAnimation()
+      
+      // Move all enemies to the new position after a delay
+      for (index, enemyView) in enemyViews.enumerated() {
+        let duration = getEnemyDuration(enemyView: enemyView)
+        enemyAnimators[index] = UIViewPropertyAnimator(duration: duration, curve: .linear,
+          animations: {
+            enemyView.center = touchLocation
+          }
+        )
+        enemyAnimators[index].startAnimation()
+      }
     }
   }
   
@@ -80,14 +91,10 @@ class ViewController: UIViewController {
     } else if screenEdge == .bottom {
       enemyView.center = CGPoint(x: position, y: 0)
     }
-    enemyViews.append(enemyView)
     view.addSubview(enemyView)
     
     // Start animation
-    let dx = playerView.center.x - enemyView.center.x
-    let dy = playerView.center.y - enemyView.center.y
-    let duration = TimeInterval(sqrt(dx * dx + dy * dy) / enemySpeed)
-    
+    let duration = getEnemyDuration(enemyView: enemyView)
     let enemyAnimator = UIViewPropertyAnimator(duration: duration, curve: .linear,
       animations: { [weak self] in
         if let strongSelf = self {
@@ -96,6 +103,7 @@ class ViewController: UIViewController {
       }
     )
     enemyAnimator.startAnimation()
+    enemyAnimators.append(enemyAnimator)
     enemyViews.append(enemyView)
   }
 }
@@ -126,5 +134,11 @@ private extension ViewController {
   func getRandomColor() -> UIColor {
     let index = arc4random_uniform(UInt32(colors.count))
     return colors[Int(index)]
+  }
+  
+  func getEnemyDuration(enemyView: UIView) -> TimeInterval {
+    let dx = playerView.center.x - enemyView.center.x
+    let dy = playerView.center.y - enemyView.center.y
+    return TimeInterval(sqrt(dx * dx + dy * dy) / enemySpeed)
   }
 }
