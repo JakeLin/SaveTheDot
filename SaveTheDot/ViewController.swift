@@ -50,42 +50,23 @@ class ViewController: UIViewController {
   // MARK: - Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
-    setupPlayerView()
-    startEnemyTimer()
-    startDisplayLink()
+    view.addSubview(playerView)
+    
+    prepareGame()
   }
 
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
-  }
-  
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-    // Start the game
+    // First touch to start the game
     if gameState == .ready {
-      startLabel.isHidden = true
-      gameState = .playing
+      startGame()
     }
     
     if let touchLocation = event?.allTouches()?.first?.location(in: view) {
       // Move the player to the new position
-      playerAnimator = UIViewPropertyAnimator(duration: playerAnimationDuration, dampingRatio: 0.5,
-        animations: { [weak self] in
-          self?.playerView.center = touchLocation
-        }
-      )
-      playerAnimator?.startAnimation()
+      movePlayer(to: touchLocation)
       
-      // Move all enemies to the new position after a delay
-      for (index, enemyView) in enemyViews.enumerated() {
-        let duration = getEnemyDuration(enemyView: enemyView)
-        enemyAnimators[index] = UIViewPropertyAnimator(duration: duration, curve: .linear,
-          animations: {
-            enemyView.center = touchLocation
-          }
-        )
-        enemyAnimators[index].startAnimation()
-      }
+      // Move all enemies to the new position to trace the player
+      moveEnemies(to: touchLocation)
     }
   }
   
@@ -133,21 +114,8 @@ class ViewController: UIViewController {
   }
   
   func tick(sender: CADisplayLink) {
-    // Update the count up timer
-    if beginTimestamp == 0 {
-      beginTimestamp = sender.timestamp
-    }
-    let elapsedTime = sender.timestamp - beginTimestamp
-    clockLabel.text = format(timeInterval: elapsedTime)
-    
-    // Check collision
-    enemyViews.forEach {
-      if let playerFrame = playerView.layer.presentation()?.frame,
-        enemyFrame = $0.layer.presentation()?.frame
-        where playerFrame.intersects(enemyFrame) {
-        gameOver()
-      }
-    }
+    updateCountUpTimer(timestamp: sender.timestamp)
+    checkCollision()
   }
 }
 
@@ -161,7 +129,6 @@ private extension ViewController {
     playerView.center = center
     playerView.layer.cornerRadius = radius
     playerView.backgroundColor = #colorLiteral(red: 0.7098039216, green: 0.4549019608, blue: 0.9607843137, alpha: 1)
-    view.addSubview(playerView)
   }
   
   func startEnemyTimer() {
@@ -196,6 +163,64 @@ private extension ViewController {
     return TimeInterval(sqrt(dx * dx + dy * dy) / enemySpeed)
   }
   
+  func gameOver() {
+    stopGame()
+    let alert = UIAlertController(title: "Game Over", message: "🔴Try again❓🔵", preferredStyle: .alert)
+    let action = UIAlertAction(title: "OK", style: .default,
+      handler: { _ in
+        self.prepareGame()
+      }
+    )
+    alert.addAction(action)
+    self.present(alert, animated: true, completion: nil)
+  }
+  
+  func stopGame() {
+    stopEnemyTimer()
+    stopDisplayLink()
+    stopAnimators()
+    gameState = .gameOver
+  }
+  
+  func prepareGame() {
+    removeEnemies()
+    setupPlayerView()
+    startLabel.isHidden = false
+    gameState = .ready
+  }
+  
+  func startGame() {
+    startEnemyTimer()
+    startDisplayLink()
+    startLabel.isHidden = true
+    beginTimestamp = 0
+    gameState = .playing
+  }
+  
+  func removeEnemies() {
+    enemyViews.forEach {
+      $0.removeFromSuperview()
+    }
+    enemyViews = []
+  }
+  
+  func stopAnimators() {
+    playerAnimator?.stopAnimation(true)
+    playerAnimator = nil
+    enemyAnimators.forEach {
+      $0.stopAnimation(true)
+    }
+    enemyAnimators = []
+  }
+  
+  func updateCountUpTimer(timestamp: TimeInterval) {
+    if beginTimestamp == 0 {
+      beginTimestamp = timestamp
+    }
+    let elapsedTime = timestamp - beginTimestamp
+    clockLabel.text = format(timeInterval: elapsedTime)
+  }
+  
   func format(timeInterval: TimeInterval) -> String {
     let interval = Int(timeInterval)
     let seconds = interval % 60
@@ -204,34 +229,34 @@ private extension ViewController {
     return String(format: "%02d:%02d.%03d", minutes, seconds, milliseconds)
   }
   
-  func gameOver() {
-    guard gameState == .playing else {
-      return
+  func checkCollision() {
+    enemyViews.forEach {
+      if let playerFrame = playerView.layer.presentation()?.frame,
+        enemyFrame = $0.layer.presentation()?.frame
+        where playerFrame.intersects(enemyFrame) {
+        gameOver()
+      }
     }
-    
-    stopGame()
-    let alert = UIAlertController(title: "Game Over", message: "🔴Try again❓🔵", preferredStyle: .alert)
-    let action = UIAlertAction(title: "OK", style: .default,
-      handler: { _ in
-        self.restartGame()
+  }
+  
+  func movePlayer(to touchLocation: CGPoint) {
+    playerAnimator = UIViewPropertyAnimator(duration: playerAnimationDuration, dampingRatio: 0.5,
+      animations: { [weak self] in
+        self?.playerView.center = touchLocation
       }
     )
-    alert.addAction(action)
-    self.present(alert, animated: true, completion: nil)
+    playerAnimator?.startAnimation()
   }
   
-  func stopGame() {
-    gameState = .gameOver
-    
-    stopEnemyTimer()
-    stopDisplayLink()
-    playerAnimator?.stopAnimation(true)
-    enemyAnimators.forEach {
-      $0.stopAnimation(true)
+  func moveEnemies(to touchLocation: CGPoint) {
+    for (index, enemyView) in enemyViews.enumerated() {
+      let duration = getEnemyDuration(enemyView: enemyView)
+      enemyAnimators[index] = UIViewPropertyAnimator(duration: duration, curve: .linear,
+        animations: {
+          enemyView.center = touchLocation
+        }
+      )
+      enemyAnimators[index].startAnimation()
     }
-  }
-  
-  func restartGame() {
-    
   }
 }
