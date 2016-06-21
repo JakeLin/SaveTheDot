@@ -9,14 +9,22 @@
 import UIKit
 
 class ViewController: UIViewController {
-  enum ScreenEdge: Int {
+  
+  // MARK: - enum
+  private enum ScreenEdge: Int {
     case top = 0
     case right = 1
     case bottom = 2
     case left = 3
   }
   
-  // MARK: - Configurations
+  private enum GameState {
+    case ready
+    case playing
+    case gameOver
+  }
+  
+  // MARK: - Constants
   private let radius: CGFloat = 10
   private let playerAnimationDuration = 5.0
   private let enemySpeed: CGFloat = 60 // points per second
@@ -32,8 +40,12 @@ class ViewController: UIViewController {
   
   private var displayLink: CADisplayLink?
   private var beginTimestamp: TimeInterval = 0
+  
+  private var gameState = GameState.ready
 
-  @IBOutlet weak var clock: UILabel!
+  // MARK: - IBOutlets
+  @IBOutlet weak var clockLabel: UILabel!
+  @IBOutlet weak var startLabel: UILabel!
   
   // MARK: - Lifecycle
   override func viewDidLoad() {
@@ -49,6 +61,12 @@ class ViewController: UIViewController {
   }
   
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    // Start the game
+    if gameState == .ready {
+      startLabel.isHidden = true
+      gameState = .playing
+    }
+    
     if let touchLocation = event?.allTouches()?.first?.location(in: view) {
       // Move the player to the new position
       playerAnimator = UIViewPropertyAnimator(duration: playerAnimationDuration, dampingRatio: 0.5,
@@ -71,6 +89,7 @@ class ViewController: UIViewController {
     }
   }
   
+  // MARK: - Selectors
   func gerenateEnemy(timer: Timer) {
     // Gerenate an enemy with random position
     let screenEdge = ScreenEdge.init(rawValue: Int(arc4random_uniform(4)))
@@ -119,7 +138,7 @@ class ViewController: UIViewController {
       beginTimestamp = sender.timestamp
     }
     let elapsedTime = sender.timestamp - beginTimestamp
-    clock.text = format(timeInterval: elapsedTime)
+    clockLabel.text = format(timeInterval: elapsedTime)
     
     // Check collision
     enemyViews.forEach {
@@ -186,6 +205,33 @@ private extension ViewController {
   }
   
   func gameOver() {
-    print(#function)
+    guard gameState == .playing else {
+      return
+    }
+    
+    stopGame()
+    let alert = UIAlertController(title: "Game Over", message: "🔴Try again❓🔵", preferredStyle: .alert)
+    let action = UIAlertAction(title: "OK", style: .default,
+      handler: { _ in
+        self.restartGame()
+      }
+    )
+    alert.addAction(action)
+    self.present(alert, animated: true, completion: nil)
+  }
+  
+  func stopGame() {
+    gameState = .gameOver
+    
+    stopEnemyTimer()
+    stopDisplayLink()
+    playerAnimator?.stopAnimation(true)
+    enemyAnimators.forEach {
+      $0.stopAnimation(true)
+    }
+  }
+  
+  func restartGame() {
+    
   }
 }

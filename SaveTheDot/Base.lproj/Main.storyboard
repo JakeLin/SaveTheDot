@@ -24,15 +24,23 @@
                                 <color key="textColor" red="0.70980392160000005" green="0.4549019608" blue="0.96078431369999995" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap to start" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zLe-o2-Ofb">
+                                <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="17"/>
+                                <color key="textColor" red="0.70980392160000005" green="0.4549019608" blue="0.96078431369999995" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.88235294117647056" green="0.90588235294117647" blue="0.91764705882352937" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="2Go-a3-41Z" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="EHs-RN-X84"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="zLe-o2-Ofb" secondAttribute="bottom" constant="180" id="LKR-YU-xm0"/>
                             <constraint firstItem="2Go-a3-41Z" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="Xka-m8-a6v"/>
+                            <constraint firstItem="zLe-o2-Ofb" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="jXt-hZ-1IE"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="clock" destination="2Go-a3-41Z" id="9Vn-rz-0fK"/>
+                        <outlet property="clockLabel" destination="2Go-a3-41Z" id="1iO-xL-5a3"/>
+                        <outlet property="startLabel" destination="zLe-o2-Ofb" id="NEA-34-Xql"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
