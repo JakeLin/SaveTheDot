@@ -40,6 +40,7 @@ class ViewController: UIViewController {
   
   private var displayLink: CADisplayLink?
   private var beginTimestamp: TimeInterval = 0
+  private var elapsedTime: TimeInterval = 0
   
   private var gameState = GameState.ready
 
@@ -165,14 +166,7 @@ private extension ViewController {
   
   func gameOver() {
     stopGame()
-    let alert = UIAlertController(title: "Game Over", message: "🔴Try again❓🔵", preferredStyle: .alert)
-    let action = UIAlertAction(title: "OK", style: .default,
-      handler: { _ in
-        self.prepareGame()
-      }
-    )
-    alert.addAction(action)
-    self.present(alert, animated: true, completion: nil)
+    displayGameOverAlert()
   }
   
   func stopGame() {
@@ -217,7 +211,7 @@ private extension ViewController {
     if beginTimestamp == 0 {
       beginTimestamp = timestamp
     }
-    let elapsedTime = timestamp - beginTimestamp
+    elapsedTime = timestamp - beginTimestamp
     clockLabel.text = format(timeInterval: elapsedTime)
   }
   
@@ -258,5 +252,30 @@ private extension ViewController {
       )
       enemyAnimators[index].startAnimation()
     }
+  }
+  
+  func displayGameOverAlert() {
+    let (title, message) = getGameOverTitleAndMessage()
+    let alert = UIAlertController(title: "Game Over", message: message, preferredStyle: .alert)
+    let action = UIAlertAction(title: title, style: .default,
+                               handler: { _ in
+                                self.prepareGame()
+      }
+    )
+    alert.addAction(action)
+    self.present(alert, animated: true, completion: nil)
+  }
+  
+  func getGameOverTitleAndMessage() -> (String, String) {
+    let elapsedSeconds = Int(elapsedTime) % 60
+    if elapsedSeconds < 10 {
+      return ("I try again 😂", "Seriously, you need more practice 😒")
+    } else if elapsedSeconds < 30 {
+      return ("Another go 😉", "No bad, you are getting there 😁")
+    } else if elapsedSeconds < 60 {
+      return ("Play again 😉", "Very good 👍")
+    }
+    
+    return ("Off cause 😚", "Legend, olympic player, go 🇧🇷")
   }
 }
