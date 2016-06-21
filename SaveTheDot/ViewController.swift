@@ -130,6 +130,8 @@ private extension ViewController {
     playerView.center = center
     playerView.layer.cornerRadius = radius
     playerView.backgroundColor = #colorLiteral(red: 0.7098039216, green: 0.4549019608, blue: 0.9607843137, alpha: 1)
+    
+    popPlayerView()
   }
   
   func startEnemyTimer() {
@@ -278,4 +280,18 @@ private extension ViewController {
     
     return ("Off cause 😚", "Legend, olympic player, go 🇧🇷")
   }
+  
+  // Copy from IBAnimatable
+  func popPlayerView() {
+    let animation = CAKeyframeAnimation(keyPath: "transform.scale")
+    animation.values = [0, 0.2, -0.2, 0.2, 0]
+    animation.keyTimes = [0, 0.2, 0.4, 0.6, 0.8, 1]
+    animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+    animation.duration = CFTimeInterval(0.7)
+    animation.isAdditive = true
+    animation.repeatCount = 3
+    animation.beginTime = CACurrentMediaTime()
+    playerView.layer.add(animation, forKey: "pop")
+  }
+
 }
