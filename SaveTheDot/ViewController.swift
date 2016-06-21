@@ -51,8 +51,7 @@ class ViewController: UIViewController {
   // MARK: - Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
-    view.addSubview(playerView)
-    
+    setupPlayerView()
     prepareGame()
   }
 
@@ -122,16 +121,11 @@ class ViewController: UIViewController {
 
 private extension ViewController {
   func setupPlayerView() {
-    // Place the player in the center of the screen.
-    let screenBounds = UIScreen.main().bounds
-    let center = CGPoint(x: screenBounds.width/2, y: screenBounds.height/2)
-    
     playerView.bounds.size = CGSize(width: radius * 2, height: radius * 2)
-    playerView.center = center
     playerView.layer.cornerRadius = radius
     playerView.backgroundColor = #colorLiteral(red: 0.7098039216, green: 0.4549019608, blue: 0.9607843137, alpha: 1)
     
-    popPlayerView()
+    view.addSubview(playerView)
   }
   
   func startEnemyTimer() {
@@ -180,7 +174,8 @@ private extension ViewController {
   
   func prepareGame() {
     removeEnemies()
-    setupPlayerView()
+    centerPlayerView()
+    popPlayerView()
     startLabel.isHidden = false
     gameState = .ready
   }
@@ -281,6 +276,13 @@ private extension ViewController {
     return ("Off cause 😚", "Legend, olympic player, go 🇧🇷")
   }
   
+  func centerPlayerView() {
+    // Place the player in the center of the screen.
+    let screenBounds = UIScreen.main().bounds
+    let center = CGPoint(x: screenBounds.width/2, y: screenBounds.height/2)
+    playerView.center = center
+  }
+  
   // Copy from IBAnimatable
   func popPlayerView() {
     let animation = CAKeyframeAnimation(keyPath: "transform.scale")
@@ -289,7 +291,7 @@ private extension ViewController {
     animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
     animation.duration = CFTimeInterval(0.7)
     animation.isAdditive = true
-    animation.repeatCount = 3
+    animation.repeatCount = 1
     animation.beginTime = CACurrentMediaTime()
     playerView.layer.add(animation, forKey: "pop")
   }
