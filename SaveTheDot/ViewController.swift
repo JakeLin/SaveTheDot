@@ -177,6 +177,7 @@ private extension ViewController {
     centerPlayerView()
     popPlayerView()
     startLabel.isHidden = false
+    clockLabel.text = "00:00.000"
     gameState = .ready
   }
   
