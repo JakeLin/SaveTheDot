@@ -279,9 +279,7 @@ private extension ViewController {
   
   func centerPlayerView() {
     // Place the player in the center of the screen.
-    let screenBounds = UIScreen.main().bounds
-    let center = CGPoint(x: screenBounds.width/2, y: screenBounds.height/2)
-    playerView.center = center
+    playerView.center = view.center
   }
   
   // Copy from IBAnimatable

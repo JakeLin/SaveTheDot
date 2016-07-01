@@ -1,6 +1,6 @@
 # Save the Dot
 
-Apple introduced `UIViewPropertyAnimator` for iOS 10. We can use this new API to control interactive animations. To experiment `UIViewPropertyAnimator`, we developed this game by using UIKit only 😉 (no Sprite Kit at all 😬). And you can see the animations are very smooth, looking forward to see more interactive animations on iOS 10.
+Apple introduced `UIViewPropertyAnimator` for iOS 10. We can use this new API to control interactive animations. To experiment `UIViewPropertyAnimator`, we developed this game by using UIKit only 😉 (no Sprite Kit at all 😬). And you can see the animations are very smooth, looking forward to see more interactive animations in iOS 10.
 
 ![SaveTheDot](https://cloud.githubusercontent.com/assets/573856/16248754/90150c2a-3854-11e6-9ee1-c2e4f228a9b6.gif)
 
