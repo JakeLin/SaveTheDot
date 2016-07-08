@@ -140,12 +140,12 @@ private extension ViewController {
   
   func startDisplayLink() {
     displayLink = CADisplayLink(target: self, selector: #selector(tick(sender:)))
-    displayLink?.add(to: RunLoop.main(), forMode: RunLoopMode.defaultRunLoopMode.rawValue)
+    displayLink?.add(to: RunLoop.main, forMode: RunLoopMode.defaultRunLoopMode)
   }
   
   func stopDisplayLink() {
     displayLink?.isPaused = true
-    displayLink?.remove(from: RunLoop.main(), forMode: RunLoopMode.defaultRunLoopMode.rawValue)
+    displayLink?.remove(from: RunLoop.main, forMode: RunLoopMode.defaultRunLoopMode)
     displayLink = nil
   }
   
