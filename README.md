@@ -26,9 +26,11 @@ $ open "SaveTheDot.xcodeproj"
 
 # Requirements
 
-* Xcode 8 beta 2
+* Xcode 8 beta 4
 * iOS 10
 * Swift 3
 
 ## License
 **Save the Dot** is released under the MIT license. See [LICENSE](https://github.com/JakeLin/SaveTheDot/blob/master/LICENSE) for details.
+
+

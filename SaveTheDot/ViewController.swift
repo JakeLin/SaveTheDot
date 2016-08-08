@@ -61,7 +61,7 @@ class ViewController: UIViewController {
       startGame()
     }
     
-    if let touchLocation = event?.allTouches()?.first?.location(in: view) {
+    if let touchLocation = event?.allTouches?.first?.location(in: view) {
       // Move the player to the new position
       movePlayer(to: touchLocation)
       
@@ -74,7 +74,7 @@ class ViewController: UIViewController {
   func gerenateEnemy(timer: Timer) {
     // Gerenate an enemy with random position
     let screenEdge = ScreenEdge.init(rawValue: Int(arc4random_uniform(4)))
-    let screenBounds = UIScreen.main().bounds
+    let screenBounds = UIScreen.main.bounds
     var position: CGFloat = 0
     
     // May be an Xcode bug, can use `switch` here, it will have an compilation error.
