@@ -104,7 +104,8 @@ class ViewController: UIViewController {
     
     // Start animation
     let duration = getEnemyDuration(enemyView: enemyView)
-    let enemyAnimator = UIViewPropertyAnimator(duration: duration, curve: .linear,
+    let enemyAnimator = UIViewPropertyAnimator(duration: duration,
+                                               curve: .linear,
                                                animations: { [weak self] in
                                                 if let strongSelf = self {
                                                   enemyView.center = strongSelf.playerView.center
@@ -238,22 +239,22 @@ fileprivate extension ViewController {
   }
   
   func movePlayer(to touchLocation: CGPoint) {
-    playerAnimator = UIViewPropertyAnimator(duration: playerAnimationDuration, dampingRatio: 0.5,
+    playerAnimator = UIViewPropertyAnimator(duration: playerAnimationDuration,
+                                            dampingRatio: 0.5,
                                             animations: { [weak self] in
                                               self?.playerView.center = touchLocation
-      }
-    )
+                                            })
     playerAnimator?.startAnimation()
   }
   
   func moveEnemies(to touchLocation: CGPoint) {
     for (index, enemyView) in enemyViews.enumerated() {
       let duration = getEnemyDuration(enemyView: enemyView)
-      enemyAnimators[index] = UIViewPropertyAnimator(duration: duration, curve: .linear,
+      enemyAnimators[index] = UIViewPropertyAnimator(duration: duration,
+                                                     curve: .linear,
                                                      animations: {
-                                                      enemyView.center = touchLocation
-        }
-      )
+                                                       enemyView.center = touchLocation
+                                                    })
       enemyAnimators[index].startAnimation()
     }
   }
