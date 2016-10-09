@@ -26,7 +26,7 @@ $ open "SaveTheDot.xcodeproj"
 
 # Requirements
 
-* Xcode 8 beta 4
+* Xcode 8.0 (8A218a)
 * iOS 10
 * Swift 3
 
