@@ -47,7 +47,8 @@ class ViewController: UIViewController {
   // MARK: - IBOutlets
   @IBOutlet weak var clockLabel: UILabel!
   @IBOutlet weak var startLabel: UILabel!
-  
+  @IBOutlet weak var bestTimeLabel: UILabel!
+    
   // MARK: - Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -179,6 +180,7 @@ fileprivate extension ViewController {
   }
   
   func prepareGame() {
+    getBestTime()
     removeEnemies()
     centerPlayerView()
     popPlayerView()
@@ -273,6 +275,8 @@ fileprivate extension ViewController {
   
   func getGameOverTitleAndMessage() -> (String, String) {
     let elapsedSeconds = Int(elapsedTime) % 60
+    setBestTime(with: format(timeInterval: elapsedTime))
+    
     switch elapsedSeconds {
     case 0..<10: return ("I try again 😂", "Seriously, you need more practice 😒")
     case 10..<30: return ("Another go 😉", "No bad, you are getting there 😁")
@@ -299,5 +303,19 @@ fileprivate extension ViewController {
     animation.beginTime = CACurrentMediaTime()
     playerView.layer.add(animation, forKey: "pop")
   }
+    
+    func setBestTime(with time:String){
+        let defaults = UserDefaults.standard
+            defaults.set(time, forKey: "bestTime")
+        
+    }
+    
+    func getBestTime(){
+        let defaults = UserDefaults.standard
+        
+        if let time = defaults.value(forKey: "bestTime") as? String {
+            self.bestTimeLabel.text = "Best Time: \(time)"
+        }
+    }
   
 }
