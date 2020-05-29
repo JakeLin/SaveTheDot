@@ -72,7 +72,7 @@ class ViewController: UIViewController {
   }
   
   // MARK: - Selectors
-  func generateEnemy(timer: Timer) {
+    @objc func generateEnemy(timer: Timer) {
     // Generate an enemy with random position
     let screenEdge = ScreenEdge.init(rawValue: Int(arc4random_uniform(4)))
     let screenBounds = UIScreen.main.bounds
@@ -118,7 +118,7 @@ class ViewController: UIViewController {
     enemyViews.append(enemyView)
   }
   
-  func tick(sender: CADisplayLink) {
+    @objc func tick(sender: CADisplayLink) {
     updateCountUpTimer(timestamp: sender.timestamp)
     checkCollision()
   }
@@ -147,12 +147,12 @@ fileprivate extension ViewController {
   
   func startDisplayLink() {
     displayLink = CADisplayLink(target: self, selector: #selector(tick(sender:)))
-    displayLink?.add(to: RunLoop.main, forMode: RunLoopMode.defaultRunLoopMode)
+    displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.default)
   }
   
   func stopDisplayLink() {
     displayLink?.isPaused = true
-    displayLink?.remove(from: RunLoop.main, forMode: RunLoopMode.defaultRunLoopMode)
+    displayLink?.remove(from: RunLoop.main, forMode: RunLoop.Mode.default)
     displayLink = nil
   }
   
@@ -296,7 +296,7 @@ fileprivate extension ViewController {
     let animation = CAKeyframeAnimation(keyPath: "transform.scale")
     animation.values = [0, 0.2, -0.2, 0.2, 0]
     animation.keyTimes = [0, 0.2, 0.4, 0.6, 0.8, 1]
-    animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+    animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
     animation.duration = CFTimeInterval(0.7)
     animation.isAdditive = true
     animation.repeatCount = 1
